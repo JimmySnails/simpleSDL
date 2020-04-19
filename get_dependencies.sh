@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-pushd external/SDL2
+pushd contrib
 
 wget https://www.libsdl.org/release/SDL2-2.0.9.zip
 unzip -q SDL2-2.0.9.zip
