@@ -1,5 +1,6 @@
 
 #include <SDL.h>
+#include <SDL_image.h>
 
 #if defined(EMSCRIPTEN)
 #include <emscripten.h>
