@@ -16,7 +16,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${binDir}/${targetSystem}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${binDir}/${targetSystem}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${binDir}/${targetSystem}_debug")
 
-
 #
 # Dependencies:
 #   Using SDL as a subproject for simplicity.
@@ -26,10 +25,37 @@ if(MINGW)
   set(VIDEO_OPENGLES OFF CACHE STRING "")
 endif()
 
+
+## NEW 
+
+
+set(DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/SDL2/intermediates/ndkBuild)
+string(TOLOWER ${CMAKE_BUILD_TYPE} ANDROID_BUILD_DIR)
+set (SDL2_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2.so)
+
+
+message (STATUS "---- SDL2 dir for debug:  ${SDL2_LOCATION}")
+
+set(SDL_LOCATION ${CMAKE_SOURCE_DIR}/contrib/)
+
+add_library(SDL2 SHARED IMPORTED )
+set_target_properties(SDL2 PROPERTIES IMPORTED_LOCATION ${SDL2_LOCATION})
+
+## add includes 
+include_directories(${CMAKE_SOURCE_DIR}/contrib/SDL/include)
+
+# add_library( main SHARED ${SDL_LOCATION}/SDL2/src/main/android/SDL_android_main.c ${SOURCE_FILES} )
+
+## END NEW
+
+
 set(sdlDir "${projectDir}/contrib/SDL")
-add_subdirectory(${sdlDir} EXCLUDE_FROM_ALL)
-set(SDL2MAIN_LIBRARY SDL2main)
-set(SDL2_LIBRARY SDL2)
+set(sdlImageDir "${projectDir}/contrib/SDL_image")
+# add_subdirectory(${sdlDir} EXCLUDE_FROM_ALL)
+# add_subdirectory(${sdlImageDir} EXCLUDE_FROM_ALL)
+# set(SDL2MAIN_LIBRARY SDL2main)
+# set(SDL2_LIBRARY SDL2)
+set(SDL2IMAGE_LIBRARY SDL2_image)
 
 
 # Joysticks were causing trouble on android.
@@ -40,6 +66,7 @@ add_definitions(-DSDL_JOYSTICK=0)
 #
 set(projectSources
   source/main.c
+  #  ${CMAKE_SOURCE_DIR}/contrib/SDL/src/main/android/SDL_android_main.c 
 
   # Use this instead for an opengl example
   #source/main_opengl.c
@@ -81,8 +108,9 @@ if(EMSCRIPTEN)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --preload-file ../../assets@/")
 
   # Emscripten requires static linking.
-  set(SDL2_LIBRARY SDL2-static)
+  set(SDL2_LIBRARY SDL2-static )
 endif()
+
 
 #
 # Build the binary.
@@ -90,19 +118,21 @@ endif()
 #
 if(ANDROID)
   # On android the final binary is a shared library not an executable.
+#   add_library(${targetName} SHARED ${projectSources})
+# add_library( SDL2 SHARED IMPORTED  GLOBAL)
   add_library(${targetName} SHARED ${projectSources})
 else()
   add_executable(${targetName} ${projectSources})
 endif()
 
 target_link_libraries(${targetName}
-  ${SDL2MAIN_LIBRARY}
-  ${SDL2_LIBRARY}
+  SDL2
   ${OPENGL_LIBRARY}
 )
+include_directories(${projectIncludeDirs})
 
-target_include_directories(${targetName}
-  PUBLIC ${projectIncludeDirs}
-)
+# target_include_directories(${targetName}
+#   PUBLIC ${projectIncludeDirs}
+# )
 
 

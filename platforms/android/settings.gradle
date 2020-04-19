@@ -1,1 +1,2 @@
 include ':android-app'
+include ':SDL2'
