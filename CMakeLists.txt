@@ -31,8 +31,6 @@ endif()
 
 set(DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/SDL2/intermediates/ndkBuild)
 string(TOLOWER ${CMAKE_BUILD_TYPE} ANDROID_BUILD_DIR)
-set (SDL2_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2.so)
-set (SDL2_IMAGE_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2_image.so)
 
 
 message (STATUS "---- SDL2 dir for debug:  ${SDL2_LOCATION}")
@@ -40,28 +38,33 @@ message (STATUS "---- SDL2 dir for debug:  ${SDL2_LOCATION}")
 set(SDL_LOCATION ${CMAKE_SOURCE_DIR}/contrib/)
 
 ##SDL2
+set (SDL2_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2.so)
 add_library(SDL2 SHARED IMPORTED )
 set_target_properties(SDL2 PROPERTIES IMPORTED_LOCATION ${SDL2_LOCATION})
 
 ## add includes 
-include_directories(${CMAKE_SOURCE_DIR}/contrib/SDL/include)
+# include_directories(${CMAKE_SOURCE_DIR}/contrib/SDL/include)
 
 ## SDL2_image
+set (SDL2_IMAGE_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2_image.so)
 add_library(SDL2_IMAGE SHARED IMPORTED )
 set_target_properties(SDL2_IMAGE PROPERTIES IMPORTED_LOCATION ${SDL2_IMAGE_LOCATION})
+
+## SDL2_ttf
+set (SDL2_TTF_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2_ttf.so)
+add_library(SDL2_TTF SHARED IMPORTED )
+set_target_properties(SDL2_TTF PROPERTIES IMPORTED_LOCATION ${SDL2_TTF_LOCATION})
+
+## SDL2_mixer
+set (SDL2_MIXER_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/libSDL2_mixer.so)
+add_library(SDL2_MIXER SHARED IMPORTED )
+set_target_properties(SDL2_MIXER PROPERTIES IMPORTED_LOCATION ${SDL2_MIXER_LOCATION})
+
 
 # add_library( main SHARED ${SDL_LOCATION}/SDL2/src/main/android/SDL_android_main.c ${SOURCE_FILES} )
 
 ## END NEW
 
-
-set(sdlDir "${projectDir}/contrib/SDL")
-set(sdlImageDir "${projectDir}/contrib/SDL_image")
-# add_subdirectory(${sdlDir} EXCLUDE_FROM_ALL)
-# add_subdirectory(${sdlImageDir} EXCLUDE_FROM_ALL)
-# set(SDL2MAIN_LIBRARY SDL2main)
-# set(SDL2_LIBRARY SDL2)
-# set(SDL2IMAGE_LIBRARY SDL2_image)
 
 
 # Joysticks were causing trouble on android.
@@ -80,8 +83,10 @@ set(projectSources
 
 # Include dirs.
 set(projectIncludeDirs ${projectIncludeDirs}
-  "${sdlDir}/include"
-  "${sdlImageDir}"
+  "${projectDir}/contrib/SDL2/include"
+  "${projectDir}/contrib/SDL2_image"
+  "${projectDir}/contrib/SDL2_ttf"
+  "${projectDir}/contrib/SDL2_mixer"
 )
 
 
@@ -136,6 +141,8 @@ endif()
 target_link_libraries(${targetName}
   SDL2
   SDL2_IMAGE
+  SDL2_TTF
+  SDL2_MIXER
   ${OPENGL_LIBRARY}
 )
 include_directories(${projectIncludeDirs})
