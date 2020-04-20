@@ -61,5 +61,6 @@ dependencies {
     // Uncomment this line to build SDL2
     // Uncomment a line in ../gradle.settings as well
 	compile project(':SDL2')
+    compile project(':libnoise:')
     // testCompile 'junit:junit:4.12'
 }

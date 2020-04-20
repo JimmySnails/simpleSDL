@@ -1,5 +1,6 @@
 /build
 /bin
+/externLibs
 CMakeLists.txt.user
 .idea
 .iml

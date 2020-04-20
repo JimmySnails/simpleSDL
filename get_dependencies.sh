@@ -27,3 +27,10 @@ mv SDL2_ttf-2.0.15 SDL2_ttf
 rm SDL2_ttf-2.0.15.tar.gz
 
 popd
+
+mkdir -p externLibs
+pushd externLibs
+
+rm -rf libnoise
+git clone https://github.com/qknight/libnoise.git
+popd
