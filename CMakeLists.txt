@@ -7,7 +7,7 @@ project(simpleSDL C CXX)
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" targetSystem)
 set(projectDir  "${CMAKE_CURRENT_LIST_DIR}")
 set(sourceDir   "${projectDir}/source")
-set(targetName  "SimpleExample")
+set(targetName  "main")
 set(binDir      "${projectDir}/bin")
 
 # Define executable output dir.
@@ -60,12 +60,14 @@ set (SDL2_MIXER_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${AN
 add_library(SDL2_MIXER SHARED IMPORTED )
 set_target_properties(SDL2_MIXER PROPERTIES IMPORTED_LOCATION ${SDL2_MIXER_LOCATION})
 
+## bzip2
+set (ZLIB_LOCATION ${DISTRIBUTION_DIR}/${ANDROID_BUILD_DIR}/obj/local/${ANDROID_ABI}/zlib.so)
+add_library(ZLIB SHARED IMPORTED )
+set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION ${ZLIB_LOCATION})
 
 # add_library( main SHARED ${SDL_LOCATION}/SDL2/src/main/android/SDL_android_main.c ${SOURCE_FILES} )
 
 ## END NEW
-
-
 
 # Joysticks were causing trouble on android.
 add_definitions(-DSDL_JOYSTICK=0)
@@ -81,16 +83,57 @@ set(projectSources
   #source/main_opengl.c
 )
 
+set(SOURCES
+        source/engine/basics/camera.cxx
+        source/engine/basics/isoMath.cxx
+        source/engine/basics/mapEdit.cxx
+        source/engine/basics/settings.cxx
+        source/engine/basics/timer.cxx
+        source/engine/basics/utils.cxx
+        source/engine/GameObjects/mapNode.cxx
+        source/engine/ui/basics/uiElement.cxx
+        source/engine/ui/basics/buttonGroup.cxx
+        source/engine/ui/basics/Layout.cxx
+        source/engine/ui/widgets/bar.cxx
+        source/engine/ui/widgets/button.cxx
+        source/engine/ui/widgets/combobox.cxx
+        source/engine/ui/widgets/checkbox.cxx
+        source/engine/ui/widgets/frame.cxx
+        source/engine/ui/widgets/Image.cxx
+        source/engine/ui/widgets/text.cxx
+        source/engine/ui/widgets/textField.cxx
+        source/engine/ui/widgets/tooltip.cxx
+        source/engine/ui/menuGroups/MenuGroupBuild.cxx
+        source/engine/engine.cxx
+        source/engine/eventManager.cxx
+        source/engine/map.cxx
+        source/engine/sprite.cxx
+        source/engine/resourcesManager.cxx
+        source/engine/tileManager.cxx
+        source/engine/uiManager.cxx
+        source/engine/windowManager.cxx
+        source/game.cxx
+        source/main.cxx
+        source/engine/audio/soundEffect.cxx
+        source/engine/audio/soundEffect.cxx
+        source/engine/audio/music.cxx
+        source/engine/audioMixer.cxx
+        ${CMAKE_SOURCE_DIR}/contrib/SDL2/src/main/android/SDL_android_main.c 
+        )
+
+
 # Include dirs.
 set(projectIncludeDirs ${projectIncludeDirs}
   "${projectDir}/contrib/SDL2/include"
   "${projectDir}/contrib/SDL2_image"
   "${projectDir}/contrib/SDL2_ttf"
   "${projectDir}/contrib/SDL2_mixer"
+  "${projectDir}/externLibs/libnoise/src/noise"
+  "${projectDir}/externLibs/zlib"
 )
 
 
-message("     Sources: ${projectSources}\n")
+message("     Sources: ${SOURCES}\n")
 message("Include dirs: ${projectIncludeDirs}\n")
 
 
@@ -133,9 +176,9 @@ if(ANDROID)
   # On android the final binary is a shared library not an executable.
 #   add_library(${targetName} SHARED ${projectSources})
 # add_library( SDL2 SHARED IMPORTED  GLOBAL)
-  add_library(${targetName} SHARED ${projectSources})
+  add_library(${targetName} SHARED ${SOURCES})
 else()
-  add_executable(${targetName} ${projectSources})
+  add_executable(${targetName} ${SOURCES})
 endif()
 
 target_link_libraries(${targetName}
@@ -143,6 +186,7 @@ target_link_libraries(${targetName}
   SDL2_IMAGE
   SDL2_TTF
   SDL2_MIXER
+#   ZLIB
   ${OPENGL_LIBRARY}
 )
 include_directories(${projectIncludeDirs})

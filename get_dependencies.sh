@@ -33,4 +33,9 @@ pushd externLibs
 
 rm -rf libnoise
 git clone https://github.com/qknight/libnoise.git
+
+rm -rf zlib
+wget https://www.zlib.net/zlib-1.2.11.tar.gz
+tar xf zlib-1.2.11.tar.gz
+mv zlib-1.2.11 zlib
 popd
