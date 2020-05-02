@@ -2,6 +2,8 @@
 #define SETTINGS_HXX_
 
 #include <string>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 class Settings
 {

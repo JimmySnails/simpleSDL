@@ -1,5 +1,7 @@
 #include "game.hxx"
 #include <SDL.h>
+#include <android/log.h>
+#include "engine/basics/log.hxx"
 
 #include <iostream>
 
@@ -49,11 +51,18 @@ int protected_main(int argc, char *argv[])
 
 int main(int argc, char **argv)
 {
+  __android_log_print(ANDROID_LOG_INFO, "Native", "Main function started");
+LOG() << "main started log";
     Game game;
+LOG() << "game instance created";
    if (!game.initialize())
   {
+LOG() << "init fail";
+
     return EXIT_FAILURE;
   }
+LOG() << "init success";
+  __android_log_print(ANDROID_LOG_INFO, "Native", "Game initialized");
     game.mainMenu();
   game.shutdown();
 

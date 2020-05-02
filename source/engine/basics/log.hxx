@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <android/log.h>
+
 #include <SDL.h>
 
 enum logType
@@ -54,11 +56,17 @@ public:
   {
     logMessage << msg;
     std::cout << logMessage.str();
-
+     #ifdef __ANDROID__
+      __android_log_print(ANDROID_LOG_INFO, "Cytopia" , "%s", logMessage.str().c_str());
+      // __android_log_print(ANDROID_LOG_INFO, "Cytopia: %s", logMessage.str());
+    #else
+    std::cout << logMessage.str();
     if (_logType == LOG_ERROR)
     {
       writeErrorLog(logMessage.str());
     }
+    #endif
+
 
     // make sure the stringstream is clean before the operator is called again.
     logMessage.str(std::string());

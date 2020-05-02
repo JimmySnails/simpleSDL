@@ -22,71 +22,76 @@
 
 bool Game::initialize()
 {
+  LOG() << "Game init";
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
   {
     LOG(LOG_ERROR) << "Failed to Init SDL\n";
     LOG(LOG_ERROR) << "SDL Error:" << SDL_GetError();
     return false;
   }
+  LOG() << "SDL init OK";
 
-  if (TTF_Init() == -1)
-  {
-    LOG(LOG_ERROR) << "Failed to Init SDL_TTF\nSDL Error:" << TTF_GetError();
-    return false;
-  }
+//   if (TTF_Init() == -1)
+//   {
+//     LOG(LOG_ERROR) << "Failed to Init SDL_TTF\nSDL Error:" << TTF_GetError();
+//     return false;
+//   }
 
-#ifndef DISABLE_SDL2_MIXER
-  if (Mix_Init(MIX_INIT_MP3) == -1)
-  {
-    LOG(LOG_ERROR) << "Failed to Init SDL_Mixer\nSDL Error:" << Mix_GetError();
-    return false;
-  }
-#endif
+// #ifndef DISABLE_SDL2_MIXER
+//   if (Mix_Init(MIX_INIT_MP3) == -1)
+//   {
+//     LOG(LOG_ERROR) << "Failed to Init SDL_Mixer\nSDL Error:" << Mix_GetError();
+//     return false;
+//   }
+// #endif
 
   // initialize window manager
-  WindowManager::instance().setWindowTitle(VERSION);
+  // WindowManager::instance().setWindowTitle(VERSION);
   return true;
 }
 
 void Game::mainMenu()
 {
+  LOG() << "main menu call";
+
   SDL_Event event;
+  LOG() << "event created";
 
   int screenWidth = Settings::instance().settings.screenWidth;
   int screenHeight = Settings::instance().settings.screenHeight;
   bool mainMenuLoop = true;
-
+LOG() << "start main Menu";
   Image logo;
   logo.setTextureID("Cytopia_Logo");
   logo.setVisibility(true);
   logo.setPosition(screenWidth / 2 - logo.getUiElementRect().w / 2, screenHeight / 4 - logo.getUiElementRect().h / 2);
 
-  Text versionText(VERSION);
-  versionText.setPosition(screenWidth - versionText.getUiElementRect().w, screenHeight - versionText.getUiElementRect().h);
+  // Text versionText(VERSION);
+  // versionText.setPosition(screenWidth - versionText.getUiElementRect().w, screenHeight - versionText.getUiElementRect().h);
 
-  Button newGameButton({screenWidth / 2 - 100, screenHeight / 2 - 20, 200, 40});
-  newGameButton.setText("New Game");
-  newGameButton.setUIElementID("newgame");
+  // Button newGameButton({screenWidth / 2 - 100, screenHeight / 2 - 20, 200, 40});
+  // newGameButton.setText("New Game");
+  // newGameButton.setUIElementID("newgame");
 
-  Button loadGameButton({screenWidth / 2 - 100, screenHeight / 2 - 20 + newGameButton.getUiElementRect().h * 2, 200, 40});
-  loadGameButton.setText("Load Game");
-  loadGameButton.registerCallbackFunction([]() { Engine::instance().loadGame("resources/save.cts"); });
+  // Button loadGameButton({screenWidth / 2 - 100, screenHeight / 2 - 20 + newGameButton.getUiElementRect().h * 2, 200, 40});
+  // loadGameButton.setText("Load Game");
+  // loadGameButton.registerCallbackFunction([]() { Engine::instance().loadGame("resources/save.cts"); });
 
-  Button quitGameButton({screenWidth / 2 - 100, screenHeight / 2 - 20 + loadGameButton.getUiElementRect().h * 4, 200, 40});
-  quitGameButton.setText("Quit Game");
-  quitGameButton.registerCallbackFunction([]() { Engine::instance().quitGame(); });
+  // Button quitGameButton({screenWidth / 2 - 100, screenHeight / 2 - 20 + loadGameButton.getUiElementRect().h * 4, 200, 40});
+  // quitGameButton.setText("Quit Game");
+  // quitGameButton.registerCallbackFunction([]() { Engine::instance().quitGame(); });
 
-  // store elements in vector
+  // // store elements in vector
   std::vector<UiElement *> uiElements;
-  uiElements.push_back(&newGameButton);
-  uiElements.push_back(&loadGameButton);
-  uiElements.push_back(&quitGameButton);
+  // uiElements.push_back(&newGameButton);
+  // uiElements.push_back(&loadGameButton);
+  // uiElements.push_back(&quitGameButton);
   uiElements.push_back(&logo);
-  uiElements.push_back(&versionText);
+  // uiElements.push_back(&versionText);
 
   UiElement *m_lastHoveredElement = nullptr;
 
-  // fade in Logo
+  // // fade in Logo
   for (Uint8 opacity = 0; opacity < 255; opacity++)
   {
     // break the loop if an event occurs
@@ -101,6 +106,8 @@ void Game::mainMenu()
     SDL_RenderClear(WindowManager::instance().getRenderer());
     logo.setOpacity(opacity);
 
+LOG() << "draw elements";
+
     for (const auto &element : uiElements)
     {
       element->draw();
@@ -111,6 +118,8 @@ void Game::mainMenu()
     SDL_RenderPresent(WindowManager::instance().getRenderer());
     SDL_Delay(5);
   }
+
+LOG() << "start main menu loop";
 
   while (mainMenuLoop)
   {

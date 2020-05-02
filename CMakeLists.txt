@@ -7,7 +7,7 @@ project(simpleSDL C CXX)
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" targetSystem)
 set(projectDir  "${CMAKE_CURRENT_LIST_DIR}")
 set(sourceDir   "${projectDir}/source")
-set(targetName  "main")
+set(targetName  "SimpleExample")
 set(binDir      "${projectDir}/bin")
 
 # Define executable output dir.
@@ -28,6 +28,21 @@ endif()
 
 ## NEW 
 
+
+if (ANDROID)
+find_library(OpenGLES2_LIBRARY GLESv2 REQUIRED)
+find_library(OpenGLES3_LIBRARY GLESv3 REQUIRED)
+find_library(ANDROID_LOG_LIBRARY log REQUIRED)
+find_library(ANDROID_LIBRARY_LIBRARY android REQUIRED)
+endif()
+
+if (ANDROID)
+  set (EXTRA_LIBS ${EXTRA_LIBS}
+    ${OpenGLES2_LIBRARY}
+    ${ANDROID_LOG_LIBRARY}
+    ${ANDROID_LIBRARY_LIBRARY}
+  )
+endif()
 
 set(DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/platforms/android/build/SDL2/intermediates/ndkBuild)
 string(TOLOWER ${CMAKE_BUILD_TYPE} ANDROID_BUILD_DIR)
@@ -112,6 +127,8 @@ set(SOURCES
         source/engine/tileManager.cxx
         source/engine/uiManager.cxx
         source/engine/windowManager.cxx
+        source/engine/android/android_fopen.cxx
+        source/engine/android/android_fopen.hxx
         source/game.cxx
         source/main.cxx
         source/engine/audio/soundEffect.cxx
@@ -186,6 +203,8 @@ target_link_libraries(${targetName}
   SDL2_IMAGE
   SDL2_TTF
   SDL2_MIXER
+  ${EXTRA_LIBS}
+
 #   ZLIB
   ${OPENGL_LIBRARY}
 )

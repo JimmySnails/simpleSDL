@@ -5,23 +5,92 @@
 
 #include "../../ThirdParty/json.hxx"
 
+
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
+
+// JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* pvt){
+
+//       // mJavaVM = vm;
+//     JNIEnv *env = NULL;
+
+//     if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_4) != JNI_OK) {
+//         __android_log_print(ANDROID_LOG_ERROR, "SDL", "Failed to get JNI Env");
+//         return JNI_VERSION_1_4;
+//     }
+//     vm->AttachCurrentThread(&env, 0);
+//     return JNI_VERSION_1_2;
+//         register_methods(env, "org/libsdl/app/SDLActivity", SDLActivity_tab, SDL_arraysize(SDLActivity_tab));
+
+// }
+// }
+
 Settings::Settings() { readFile(); }
 using json = nlohmann::json;
 
 void Settings::readFile()
 {
+  LOG() << "settings::readfile begin";
   json _settingsJSONObject;
+  LOG() << "created json object";
 
-  std::string settingsFileName = SDL_GetBasePath();
-  settingsFileName.append(SETTINGS_FILE_NAME);
-  std::ifstream i(settingsFileName);
+  LOG() << "LOG FILE " << SETTINGS_FILE_NAME;
+// #ifndef __ANDROID__
+//   std::string settingsFileName = SDL_GetBasePath();
+//   settingsFileName.append(SETTINGS_FILE_NAME);
+//   std::ifstream i(settingsFileName);
 
-  if (i.fail())
-  {
-    LOG(LOG_ERROR) << "File " << SETTINGS_FILE_NAME << " does not exist! Cannot load settings from INI File!";
-    // Application should quit here, without settings from the ini file we can't continue
-    return;
+//   if (i.fail())
+//   {
+//     LOG(LOG_ERROR) << "File " << settingsFileName << " does not exist! Cannot load settings from INI File!";
+//     // Application should quit here, without settings from the ini file we can't continue
+//   LOG() << "ifstream done";
+// LOG() << "get base path: " << SDL_GetBasePath();
+//     return;
+//   }
+// #else
+
+    // AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
+    // AAsset* asset = AAssetManager_open(mgr, (const char *) js, AASSET_MODE_UNKNOWN);
+    // if (NULL == asset) {
+    //     __android_log_print(ANDROID_LOG_ERROR, NF_LOG_TAG, "_ASSET_NOT_FOUND_");
+    //     return JNI_FALSE;
+    // }
+    // long size = AAsset_getLength(asset);
+    // char* buffer = (char*) malloc (sizeof(char)*size);
+    // AAsset_read (asset,buffer,size);
+    // __android_log_print(ANDROID_LOG_ERROR, NF_LOG_TAG, buffer);
+    // AAsset_close(asset);
+
+  // std::string settingsFileName = SDL_AndroidGetInternalStoragePath();
+  std::string settingsFileName = SETTINGS_FILE_NAME;
+  // settingsFileName.append("/");
+  // settingsFileName.append(SETTINGS_FILE_NAME);
+  LOG() << "Internal " << settingsFileName;
+
+ int blocks;
+  char buf[256];
+  SDL_RWops *rw=SDL_RWFromFile(settingsFileName.c_str(),"rb");
+  if(rw==NULL) {
+    LOG() << stderr << "Couldnt open " << settingsFileName;
   }
+
+  blocks=SDL_RWread(rw,buf,16,256/16);
+  SDL_RWclose(rw);
+  if(blocks<0) {
+    LOG() << stderr << "Couldnt read from " << settingsFileName;
+    
+  }
+    LOG() << stderr << "Read  " << blocks << " blocks!";
+
+
+  std::string i = buf;
+  LOG() << "Here's what the raw buf char str: " << buf;
+  LOG() << "Here's what i've read: " << i;
+  // std::ifstream i(settingsFileName);
+// #endif
+  // LOG() << "Log File: "<< settingsFileName;
 
   // check if json file can be parsed
   _settingsJSONObject = json::parse(i, nullptr, false);

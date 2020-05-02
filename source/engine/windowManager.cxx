@@ -12,14 +12,18 @@ WindowManager::WindowManager()
                               Settings::instance().settings.screenWidth, Settings::instance().settings.screenHeight, SDL_WINDOW_FULLSCREEN);
   if (m_window == nullptr)
   {
+      __android_log_print(ANDROID_LOG_INFO, "Native", "Game initialized");
+
     LOG(LOG_ERROR) << "Failed to Init SDL\nSDL Error:" << SDL_GetError();
   }
+    LOG() << "Init SDL succesful";
 
   m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (m_renderer == nullptr)
   {
     LOG(LOG_ERROR) << "Failed to create Renderer!\nSDL Error:" << SDL_GetError();
   }
+    LOG() << "Init renderer succesful";
 
   // SDL_Surface *icon = IMG_Load(m_windowIcon.c_str());
 
