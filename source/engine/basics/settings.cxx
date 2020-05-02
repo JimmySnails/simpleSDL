@@ -70,13 +70,13 @@ void Settings::readFile()
   LOG() << "Internal " << settingsFileName;
 
  int blocks;
-  char buf[256];
+  char buf[2048];
   SDL_RWops *rw=SDL_RWFromFile(settingsFileName.c_str(),"rb");
   if(rw==NULL) {
     LOG() << stderr << "Couldnt open " << settingsFileName;
   }
 
-  blocks=SDL_RWread(rw,buf,16,256/16);
+  blocks=SDL_RWread(rw,buf,16,2048/16);
   SDL_RWclose(rw);
   if(blocks<0) {
     LOG() << stderr << "Couldnt read from " << settingsFileName;
