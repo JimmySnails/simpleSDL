@@ -25,16 +25,52 @@ void ResourcesManager::loadTexture(const std::string &id, const std::string &fil
 void ResourcesManager::loadUITexture()
 {
   json uiDataJSON;
+// ********* NEW
 
-  std::ifstream i(SDL_GetBasePath() + Settings::instance().settings.uiDataJSONFile);
-  if (i.fail())
-  {
-    LOG(LOG_ERROR) << "File " << Settings::instance().settings.uiDataJSONFile << " does not exist!";
-    return;
+LOG() << "loadUITexture () - parsing JSON file now";
+ int blocks;
+  // char buf[65536];
+  SDL_RWops *rw=SDL_RWFromFile(Settings::instance().settings.uiDataJSONFile.c_str(),"rb");
+  Sint64 res_size = SDL_RWsize(rw);
+  char* res = (char*)malloc(res_size + 1);
+  if(rw==NULL) {
+    LOG() << stderr << "Couldnt open " << Settings::instance().settings.uiDataJSONFile;
   }
+
+   Sint64 nb_read_total = 0, nb_read = 1;
+  char* buf = res;
+  while (nb_read_total < res_size && nb_read != 0) {
+          nb_read = SDL_RWread(rw, buf, 1, (res_size - nb_read_total));
+          nb_read_total += nb_read;
+          buf += nb_read;
+  }
+
+        res[nb_read_total] = '\0';
+
+//  blocks=SDL_RWread(rw,buf,16,65536/16);
+  std::string i = res;
+  SDL_RWclose(rw);
+   if (nb_read_total != res_size) {
+                free(res);
+                LOG() << "ERROR loading file "<< Settings::instance().settings.uiDataJSONFile;
+        }
+
+
+  // free (buf);
+  LOG() << "Here's what i've read: " << i;
+ /// *** END NEW
+
+
+  // std::ifstream i(SDL_GetBasePath() + Settings::instance().settings.uiDataJSONFile);
+  // if (i.fail())
+  // {
+  //   LOG(LOG_ERROR) << "File " << Settings::instance().settings.uiDataJSONFile << " does not exist!";
+  //   return;
+  // }
 
   // check if json file can be parsed
   uiDataJSON = json::parse(i, nullptr, false);
+LOG() << "loadUITexture () - parsed!";
 
   if (uiDataJSON.is_discarded())
   {
@@ -42,7 +78,7 @@ void ResourcesManager::loadUITexture()
     return;
   }
 
-  i.close();
+  // i.close();
 
   for (const auto &tileID : uiDataJSON.items())
   {
